@@ -76,7 +76,7 @@ def generate_PRM(date, SCHEDULES, title, counter, cell, FC):
 	
 		file.write("\t3.\tIrrigation (IRR) file\n")
 		file.write("\t\t"+schedule+"\n")
-		file.write("\t\tC:\\FAO\\Programs\\IRR\\"+str(cell)+'\\'+str(date[0][2])+'\\'+title+"\\"+title+"_"+counter+"\\\n")
+		file.write("\t\tC:\\FAO\\IRR\\"+str(cell)+'\\'+str(date[0][2])+'\\'+title+"\\"+title+"_"+counter+"\\\n")
 	
 		file.write("\t4.\tManagement (MAN) file\n")
 		file.write("\t\t(None)\n")
