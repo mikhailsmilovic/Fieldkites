@@ -41,6 +41,7 @@ def generate_IRR(schedule, frequency, Irrigatable_days, FC):
 	
 	shutil.move(os.getcwd()+'/'+title, os.getcwd()+'/IRR')
 
+"""
 def generate_IRR_RAWFC():
 	
 	RAW=[80,90,95,100,105,110,120,125,130]
@@ -66,3 +67,4 @@ def generate_IRR_RAWFC():
             
             file.close()
             shutil.move(os.getcwd()+'/'+title, os.getcwd()+'/IRR/Generate')
+"""

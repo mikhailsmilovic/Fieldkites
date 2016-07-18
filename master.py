@@ -4,17 +4,21 @@ from generate_PRM import generate_PRM, generate_PRM_generate
 from kite_functions import day, date
 from growing_season import growing_season
 from generate_SW0 import generate_SW0
+from generate_CLI import generate_CLI
 import math
 import os, shutil
 import time
 start_time = time.time()
 
-#---- Setup ----
+#To use this
+
+
+#---- begin: Setup ----
 FC=True #True=Initial soil moisture is at field capacity, False=Soil moisture determined otherwise, such as according to simulated soil moisture
 
 #Either Irr_days or Irr_frequency is set
 
-Irr_days = 9 #with soil moisture, make it 7-8, with FC make it 9+
+Irr_days = 5 #with soil moisture, make it 7-8, with FC make it 9+
 choice='days'
 
 """
@@ -23,14 +27,27 @@ choice='frequency'
 # Irrigation will occur if Irr_frequency is a divisor of the day.
 """
 
-
 Irr_depth_interval = 30
 Irr_MAX = 180 #with soil moisture, make it 320, with FC make it <300
 
+#---- end: Setup ----
+
+for subdirectory in ['depth_days_int', 'IRR', 'PRM']:
+    if subdirectory not in os.listdir('C:\\FAO'):
+        os.mkdir('C:\\FAO\\'+subdirectory)
+
 for cell in [435]: #[167,208,227,255,266,349,435,451,478]:
+    year_specific=False #to check if the year-specific files have been generated
     for year in range(2003, 2003+1):
 
-        #Generate yearly TMP files if not already done
+        #Generate yearly TMP files if not already done, only checks once per cell
+        #Done here instead of one level up to do the test with an appropriate year
+        if year_specific==False:
+            if str(cell)+'_'+str(year)+'.CLI' not in os.listdir('C:\\FAO\\AquaCrop\\DATA\\'+str(cell)):
+                generate_CLI(cell)
+                year_specific=True
+
+        year_specific=True
         
         #Establish the beginning of the growing season
         DAYS=growing_season(cell, year)
@@ -56,23 +73,23 @@ for cell in [435]: #[167,208,227,255,266,349,435,451,478]:
         title_end=str(Irr_MAX)+"_"+str(Irr_days)+"_"+str(Irr_depth_interval)
     
     
-        title='C:\\FAO\\Programs\\depth_days_int\\'+title_end
+        title='C:\\FAO\\depth_days_int\\'+title_end
         file = open(title, 'r')
         
-        if str(cell) not in os.listdir('C:\\FAO\\Programs\\IRR\\'):
-            os.mkdir('C:\\FAO\\Programs\\IRR\\'+str(cell))
-        if str(cell) not in os.listdir('C:\\FAO\\Programs\\PRM\\'):
-            os.mkdir('C:\\FAO\\Programs\\PRM\\'+str(cell))
+        if str(cell) not in os.listdir('C:\\FAO\\IRR\\'):
+            os.mkdir('C:\\FAO\\IRR\\'+str(cell))
+        if str(cell) not in os.listdir('C:\\FAO\\PRM\\'):
+            os.mkdir('C:\\FAO\\PRM\\'+str(cell))
         
     
         #Make folder for years if it doesn't yet exist
-        if str(year) not in os.listdir('C:\\FAO\\Programs\\IRR\\'+str(cell)):
-            os.mkdir('C:\\FAO\\Programs\\IRR\\'+str(cell)+'\\'+str(year))
-        if str(year) not in os.listdir('C:\\FAO\\Programs\\PRM\\'+str(cell)):
-            os.mkdir('C:\\FAO\\Programs\\PRM\\'+str(cell)+'\\'+str(year))
+        if str(year) not in os.listdir('C:\\FAO\\IRR\\'+str(cell)):
+            os.mkdir('C:\\FAO\\IRR\\'+str(cell)+'\\'+str(year))
+        if str(year) not in os.listdir('C:\\FAO\\PRM\\'+str(cell)):
+            os.mkdir('C:\\FAO\\PRM\\'+str(cell)+'\\'+str(year))
         
-        if title_end not in os.listdir('C:\\FAO\\Programs\\IRR\\'+str(cell)+'\\'+str(year)+'\\'):
-            os.mkdir('C:\\FAO\\Programs\\IRR\\'+str(cell)+'\\'+str(year)+'\\'+title_end)
+        if title_end not in os.listdir('C:\\FAO\\IRR\\'+str(cell)+'\\'+str(year)+'\\'):
+            os.mkdir('C:\\FAO\\IRR\\'+str(cell)+'\\'+str(year)+'\\'+title_end)
     
             num_lines = sum(1 for line in file)
             num_programs = int(math.ceil(num_lines/125.))
@@ -81,7 +98,7 @@ for cell in [435]: #[167,208,227,255,266,349,435,451,478]:
             digits_string="%0"+str(digits)+"d"
     
             for i in range(num_programs):    
-                os.mkdir('C:\\FAO\\Programs\\IRR\\'+str(cell)+'\\'+str(year)+'\\'+title_end+'\\'+title_end+'_'+digits_string%i)
+                os.mkdir('C:\\FAO\\IRR\\'+str(cell)+'\\'+str(year)+'\\'+title_end+'\\'+title_end+'_'+digits_string%i)
         
             file = open(title, 'r')
             counter=0 
@@ -89,15 +106,15 @@ for cell in [435]: #[167,208,227,255,266,349,435,451,478]:
     
                 schedule=eval(line)
                 filename=generate_IRR(schedule, Irr_frequency, Irrigatable_days, FC)
-                shutil.move(os.getcwd()+'\\'+filename, 'C:\\FAO\\Programs\\IRR\\'+str(cell)+'\\'+str(year)+'\\'+title_end+'\\'+title_end+'_'+ digits_string%(int(math.floor(counter/125.))))
+                shutil.move(os.getcwd()+'\\'+filename, 'C:\\FAO\\IRR\\'+str(cell)+'\\'+str(year)+'\\'+title_end+'\\'+title_end+'_'+ digits_string%(int(math.floor(counter/125.))))
                 counter+=1
     
-        SCHEDULES_125=[os.listdir('C:\\FAO\\Programs\\IRR\\'+str(cell)+'\\'+str(year)+'\\'+title_end+'\\'+i) for i in os.listdir('C:\\FAO\\Programs\\IRR\\'+str(cell)+'\\'+str(year)+'\\'+title_end)]
-        os.mkdir('C:\\FAO\\Programs\\PRM\\'+str(cell)+'\\'+str(year)+'\\'+title_end+'\\')
+        SCHEDULES_125=[os.listdir('C:\\FAO\\IRR\\'+str(cell)+'\\'+str(year)+'\\'+title_end+'\\'+i) for i in os.listdir('C:\\FAO\\IRR\\'+str(cell)+'\\'+str(year)+'\\'+title_end)]
+        os.mkdir('C:\\FAO\\PRM\\'+str(cell)+'\\'+str(year)+'\\'+title_end+'\\')
     
         for i in range(len(SCHEDULES_125)):
             generate_PRM(Date_crop*2, SCHEDULES_125[i], title_end, digits_string%i, cell, FC)
-            shutil.move(os.getcwd()+'/'+str(cell)+'_'+str(Date_crop[0][2])+'_'+title_end+'_'+str(digits_string%i)+'.PRM', 'C:\\FAO\\Programs\\PRM\\'+str(cell)+'\\'+str(year)+'\\'+title_end+'\\')
+            shutil.move(os.getcwd()+'/'+str(cell)+'_'+str(Date_crop[0][2])+'_'+title_end+'_'+str(digits_string%i)+'.PRM', 'C:\\FAO\\PRM\\'+str(cell)+'\\'+str(year)+'\\'+title_end+'\\')
 
 print("--- %s seconds ---" % (time.time() - start_time))
 

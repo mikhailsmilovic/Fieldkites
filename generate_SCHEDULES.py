@@ -56,9 +56,9 @@ def generate_SCHEDULES(Date_crop, Irr_MAX, Irr_days, Irr_depth_interval, FC):
 	Irrigatable_days = Date_crop_day[1]-Date_crop_day[0] #doesn't include day of sowing nor the day of maturity
 
 	title=str(Irr_MAX)+"_"+str(Irr_days)+"_"+str(Irr_depth_interval)
-	if title in os.listdir(os.getcwd()+"/depth_days_int"):
-	    print('Help, I\'m in here!')
-	    return()
+	if title in os.listdir('C:\\FAO\\depth_days_int'):
+		print('We\'ve already generated the permutations')
+		return()
 	    
 	file = open(title, "w")
 
@@ -116,6 +116,6 @@ def generate_SCHEDULES(Date_crop, Irr_MAX, Irr_days, Irr_depth_interval, FC):
 
 	file.close()
 
-	shutil.move(os.getcwd()+"/"+title, os.getcwd()+"/depth_days_int")
+	shutil.move(os.getcwd()+"/"+title, 'C:\\FAO\\depth_days_int')
 
 
